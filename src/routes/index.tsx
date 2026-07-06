@@ -67,22 +67,31 @@ export const Route = createFileRoute("/")({
 });
 
 const DRY_LINES = [
-  "Sem drama.",
-  "Um dia como qualquer outro.",
-  "Nada de especial. É o ponto.",
-  "Continua sendo segunda.",
-  "A dopamina que se acostume.",
-  "O algoritmo não vai sentir sua falta.",
-  "Silêncio produtivo.",
-  "Você e o tédio, olho no olho.",
+  "Mais um dia sem bater uma.",
+  "O controle segue firme.",
+  "Sem drama, só consistência.",
+  "Você está segurando a linha.",
+  "A vontade passou, e você venceu.",
+  "Mais uma vitória sem ceder.",
+  "O corpo aprende, e você acompanha.",
+  "Sem julgamento, só registro.",
 ];
 
 function App() {
   const [state, setState] = useState<AppState | null>(null);
   const [tab, setTab] = useState("hoje");
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   useEffect(() => {
-    setState(loadState());
+    const loaded = loadState();
+    setState(loaded);
+
+    if (typeof window !== "undefined") {
+      const seen = window.localStorage.getItem("sa-e-nata:welcome-seen:v1");
+      if (!seen) {
+        setWelcomeOpen(true);
+      }
+    }
   }, []);
 
   const update = (s: AppState) => {
@@ -101,46 +110,75 @@ function App() {
     );
   }
 
+  const closeWelcome = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("sa-e-nata:welcome-seen:v1", "1");
+    }
+    setWelcomeOpen(false);
+  };
+
   return (
-    <TooltipProvider delayDuration={200}>
-      <div className="min-h-screen bg-background">
-        <div className="mx-auto flex min-h-screen max-w-lg flex-col px-5 pb-10 pt-8 sm:px-6 sm:pt-12">
-          <Header />
+    <Dialog open={welcomeOpen} onOpenChange={(open) => !open && closeWelcome()}>
+      <TooltipProvider delayDuration={200}>
+        <div className="min-h-screen bg-background">
+          <div className="mx-auto flex min-h-screen max-w-lg flex-col px-5 pb-10 pt-8 sm:px-6 sm:pt-12">
+            <Header />
 
-          <Tabs
-            value={tab}
-            onValueChange={setTab}
-            className="mt-8 flex flex-1 flex-col"
-          >
-            <TabsList className="grid h-11 w-full grid-cols-4 rounded-lg bg-surface p-1">
-              <TabTrigger value="hoje">Hoje</TabTrigger>
-              <TabTrigger value="calendario">Calendário</TabTrigger>
-              <TabTrigger value="historico">Histórico</TabTrigger>
-              <TabTrigger value="stats">Stats</TabTrigger>
-            </TabsList>
+            <Tabs
+              value={tab}
+              onValueChange={setTab}
+              className="mt-8 flex flex-1 flex-col"
+            >
+              <TabsList className="grid h-11 w-full grid-cols-4 rounded-lg bg-surface p-1">
+                <TabTrigger value="hoje">Hoje</TabTrigger>
+                <TabTrigger value="calendario">Calendário</TabTrigger>
+                <TabTrigger value="historico">Histórico</TabTrigger>
+                <TabTrigger value="stats">Stats</TabTrigger>
+              </TabsList>
 
-            <div className="relative mt-8 flex-1">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={tab}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {tab === "hoje" && <TodayView state={state} update={update} />}
-                  {tab === "calendario" && <CalendarView state={state} />}
-                  {tab === "historico" && (
-                    <HistoryView state={state} update={update} />
-                  )}
-                  {tab === "stats" && <StatsView state={state} />}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </Tabs>
+              <div className="relative mt-8 flex-1">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={tab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {tab === "hoje" && <TodayView state={state} update={update} />}
+                    {tab === "calendario" && <CalendarView state={state} />}
+                    {tab === "historico" && (
+                      <HistoryView state={state} update={update} />
+                    )}
+                    {tab === "stats" && <StatsView state={state} />}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </Tabs>
+          </div>
         </div>
-      </div>
-    </TooltipProvider>
+      </TooltipProvider>
+
+      <DialogContent className="max-w-md rounded-lg border-border">
+        <DialogHeader>
+          <DialogTitle className="text-base font-medium">
+            Bem-vindo ao Pungos App, Sá e Nata
+          </DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            Aqui você conta os dias sem bater uma e acompanha seu progresso com
+            calma, sem julgamento e sem confete.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="mt-2 rounded-lg border border-border bg-surface p-3 text-sm text-foreground">
+          Hoje é mais um dia para mostrar que você consegue segurar a linha.
+        </div>
+        <DialogFooter className="mt-2">
+          <Button onClick={closeWelcome} className="bg-primary text-primary-foreground hover:bg-primary/90">
+            Entrar no app
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -260,7 +298,7 @@ function TodayView({
 
       {/* Copy */}
       <p className="mt-8 max-w-xs text-center text-[15px] leading-relaxed text-foreground">
-        Dia {days}. {line}
+        Dia {days}. {line} Você já está em {days} dias sem bater uma.
       </p>
 
       {/* Milestone card */}
@@ -273,7 +311,7 @@ function TodayView({
         >
           <Trophy className="h-4 w-4 text-primary" strokeWidth={1.75} />
           <div className="text-sm">
-            <span className="font-medium text-foreground">Marco de {days} dias.</span>{" "}
+            <span className="font-medium text-foreground">Marco de {days} dias sem bater uma.</span>{" "}
             <span className="text-muted-foreground">Anotado.</span>
           </div>
         </motion.div>
@@ -283,7 +321,7 @@ function TodayView({
       <div className="mt-8 flex w-full items-center justify-between border-t border-border pt-5 text-xs text-muted-foreground">
         <span>Próximo marco</span>
         <span className="font-mono tabular-nums text-foreground">
-          {nextM - days} {nextM - days === 1 ? "dia" : "dias"} · {nextM}
+          {nextM - days} {nextM - days === 1 ? "dia" : "dias"} · {nextM}d
         </span>
       </div>
 

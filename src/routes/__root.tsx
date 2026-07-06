@@ -71,17 +71,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sá e Nata — Dias sem drama" },
+      { title: "Sá e Nata — Dias sem bater uma" },
       {
         name: "description",
         content:
-          "Rastreador minimalista de dias limpos. Sem culpa, sem confete — só os números.",
+          "App para controlar a masturbação com registro de dias sem ceder, sem culpa e sem confete.",
       },
       { name: "author", content: "Sá e Nata" },
-      { property: "og:title", content: "Sá e Nata — Dias sem drama" },
+      { property: "og:title", content: "Sá e Nata — Dias sem bater uma" },
       {
         property: "og:description",
-        content: "Rastreador minimalista de dias limpos. Sem culpa, sem confete.",
+        content: "App para controlar a masturbação com registro de dias sem ceder, sem culpa e sem confete.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
