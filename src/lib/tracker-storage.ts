@@ -25,6 +25,54 @@ export interface AppState {
 
 const KEY = "sa-e-nata:state:v1";
 
+const createMockState = (): AppState => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const createdAt = new Date(today);
+  createdAt.setDate(createdAt.getDate() - 96);
+
+  const startDate = new Date(today);
+  startDate.setDate(startDate.getDate() - 19);
+
+  const relapseOne = new Date(today);
+  relapseOne.setDate(relapseOne.getDate() - 72);
+
+  const relapseTwo = new Date(today);
+  relapseTwo.setDate(relapseTwo.getDate() - 44);
+
+  const relapseThree = new Date(today);
+  relapseThree.setDate(relapseThree.getDate() - 17);
+
+  return {
+    startDate: toISO(startDate),
+    createdAt: toISO(createdAt),
+    relapses: [
+      {
+        id: "mock-relapse-1",
+        date: toISO(relapseOne),
+        trigger: "estresse",
+        mood: "mal",
+        note: "Semana intensa de trabalho e pouca atenção ao ritmo.",
+      },
+      {
+        id: "mock-relapse-2",
+        date: toISO(relapseTwo),
+        trigger: "tedio",
+        mood: "neutro",
+        note: "Fiquei sem foco no fim da tarde e cedi por impulso.",
+      },
+      {
+        id: "mock-relapse-3",
+        date: toISO(relapseThree),
+        trigger: "sono",
+        mood: "bem",
+        note: "Noite curta depois de viajar e acabei compensando.",
+      },
+    ],
+  };
+};
+
 export const todayISO = () => {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
@@ -56,11 +104,7 @@ export const loadState = (): AppState => {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) {
-      const initial: AppState = {
-        startDate: todayISO(),
-        relapses: [],
-        createdAt: todayISO(),
-      };
+      const initial = createMockState();
       localStorage.setItem(KEY, JSON.stringify(initial));
       return initial;
     }
